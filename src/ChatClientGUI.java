@@ -2,10 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ChatClientGUI extends JFrame {
     private JTextArea messageArea;
     private JTextField textField;
+    private JButton exitButton;
     private ChatClient client;
 
     public ChatClientGUI() {
@@ -13,18 +16,62 @@ public class ChatClientGUI extends JFrame {
         setSize(400, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        //Styling variables
+        Color backgroundColor = new Color(240, 240, 240); //Light grey background
+        Color buttonColor = new Color(75,75,75); // Darker grey for buttons
+        Color textColor = new Color(50,50,50);
+        Font textFont = new Font("Arial", Font.PLAIN, 14);
+        Font buttonFont = new Font("Arial", Font.BOLD, 22);
+
         messageArea = new JTextArea();
         messageArea.setEditable(false);
-        add(new JScrollPane(messageArea), BorderLayout.CENTER);
+        messageArea.setBackground(backgroundColor);
+        messageArea.setForeground(textColor);
+        messageArea.setFont(textFont);
+        JScrollPane scrollPane = new JScrollPane(messageArea);
+        add(scrollPane, BorderLayout.CENTER);
 
+        //Prompt for username
+        String name = JOptionPane.showInputDialog(this, "Enter your name:", "Name Entry", JOptionPane.PLAIN_MESSAGE);
+        //Update title window to include username:
+        this.setTitle("Chat Application - " + name);
+
+        //Apply Style to the text field
         textField = new JTextField();
+        textField.setFont(textFont);
+        textField.setForeground(textColor);
+        textField.setBackground(backgroundColor);
         textField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                client.sendMessage(textField.getText());
+                String message = "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]" + name + ": " + textField.getText();
+                client.sendMessage(message);
                 textField.setText("");
             }
         });
-        add(textField, BorderLayout.SOUTH);
+
+        //Apply styles to exit button
+        exitButton = new JButton("Exit");
+        exitButton.setFont(buttonFont);
+        exitButton.setBackground(buttonColor);
+        exitButton.setForeground(Color.WHITE);
+        exitButton.addActionListener( e -> {
+            String departureMessage = name + " has left the chat.";
+            client.sendMessage(departureMessage);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            // Exit application
+            System.exit(0);
+        });
+
+        // Creating a bottom panel to hold the text field and exit button
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(backgroundColor);
+        bottomPanel.add(textField, BorderLayout.CENTER);
+        bottomPanel.add(exitButton, BorderLayout.EAST);
+        add(bottomPanel, BorderLayout.SOUTH); // Add the bottom panel to the frame
 
         // Initialize and start the ChatClient
         try {
