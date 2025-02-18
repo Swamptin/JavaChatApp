@@ -8,7 +8,7 @@ public class ChatClientGUI extends JFrame {
     private JTextField textField;
     private ChatClient client;
 
-    public ChatClientUI() {
+    public ChatClientGUI() {
         super("Chat Application");
         setSize(400, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -39,7 +39,7 @@ public class ChatClientGUI extends JFrame {
     }
 
     private void onMessageReceived(String Message){
-        SwingUtilities.invokeLater(() -> messageArea.append(message + "\n"));
+        SwingUtilities.invokeLater(() -> messageArea.append(Message + "\n"));
     }
 
     public static void main(String[] args){
